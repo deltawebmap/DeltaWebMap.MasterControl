@@ -54,7 +54,7 @@ namespace DeltaWebMap.MasterControl
             server = new MasterControlServer(delta, new IPEndPoint(IPAddress.Any, cfg.general.public_serving_port));
 
             //Init web interface server
-            web_interface = new DeltaWebServer(delta, 34344);
+            web_interface = new DeltaWebServer(delta, cfg.general.admin_interface_port);
             web_interface.AddService(new LoginDefinition());
             web_interface.AddService(new MachineListDefinition());
             web_interface.AddService(new MachineEnrollDefinition());
