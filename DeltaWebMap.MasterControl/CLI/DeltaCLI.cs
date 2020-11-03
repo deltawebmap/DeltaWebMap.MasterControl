@@ -163,12 +163,13 @@ namespace DeltaWebMap.MasterControl.CLI
             cfg.general.enviornment = CLITools.PromptFormTextInput("Make Config - Enviornment", "Type an enviornment label. Database collections will have this name.", "prod");
             cfg.general.mongodb_connection = CLITools.PromptFormTextInput("Make Config - MongoDB Connection", "Type the MongoDB connection string. It will begin with \"mongodb://\".");
             cfg.general.steam_api_token = CLITools.PromptFormTextInput("Make Config - Steam API Key", "Type your Steam API key. You can obtain it at https://steamcommunity.com/dev/apikey.");
-            cfg.general.steam_cache_expire_minutes = CLITools.PromptFormIntInput("Make Config - Steam API Cache Time", "This is the amount of time to cache Steam profiles.", "512");
+            cfg.general.steam_cache_expire_minutes = CLITools.PromptFormIntInput("Make Config - Steam API Cache Time", "This is the amount of time, in minutes, to cache Steam profiles.", "512");
             cfg.general.firebase_uc_bucket = CLITools.PromptFormTextInput("Make Config - Firebase UC Bucket", "Type the name of your Firebase bucket that you will use for storing user content.");
             cfg.general.log = CLITools.PromptFormSelect("Make Config - Enable Logging", "Would you like to enable logging? This may slow down the program.", "DISABLED", "ENABLED") == "ENABLED";
             cfg.general.public_serving_port = CLITools.PromptFormIntInput("Make Config - Serving Port", "This is the port that manager servers will connect on. This should be open.", "43199");
             cfg.general.public_serving_ip = CLITools.PromptFormTextInput("Make Config - Serving IP", "This is the address that manager servers will connect on. This should be open.", "10.0.1.13");
             cfg.general.admin_session_expire_time = CLITools.PromptFormIntInput("Make Config - Admin Session Time", "This is how long, in minutes, admin sessions are valid for.", "15");
+            cfg.general.admin_interface_port = CLITools.PromptFormIntInput("Make Config - Admin Web Interface Port", "Select a port to run the admin interface on. This should be public facing.", "80");
 
             //Prompt hosts
             cfg.hosts.master = CLITools.PromptFormTextInput("Make Config - Hosts - Master API", "Type the hostname of the master API.", "https://deltamap.net");

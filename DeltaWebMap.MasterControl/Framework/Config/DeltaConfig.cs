@@ -87,6 +87,7 @@ namespace DeltaWebMap.MasterControl.Framework.Config
         public int public_serving_port; //The port the master uses. Public-facing
         public string public_serving_ip; //The serving IP address
         public int admin_session_expire_time;
+        public int admin_interface_port;
     }
 
     public class DeltaConfigSecrets
