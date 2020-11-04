@@ -68,5 +68,15 @@ namespace DeltaWebMap.MasterControl.Framework.IOServer
         {
             return SendMessageGetResponseChannelSerialized(MasterConnectionOpcodes.OPCODE_MASTER_M_DELETEVERSION, cmd);
         }
+
+        public ChannelReader<RouterMessage> AddSite(ManagerAddSite cmd)
+        {
+            return SendMessageGetResponseChannelSerialized(MasterConnectionOpcodes.OPCODE_MASTER_M_ADDSITE, cmd);
+        }
+
+        public Task<List<NetManagerSite>> GetSiteList()
+        {
+            return RequestGetObject<List<NetManagerSite>>(MasterConnectionOpcodes.OPCODE_MASTER_M_LISTSITES);
+        }
     }
 }
