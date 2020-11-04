@@ -8,6 +8,7 @@ using LibDeltaSystem.Entities;
 using LibDeltaSystem.Tools;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -38,6 +39,8 @@ namespace DeltaWebMap.MasterControl.Framework.IOServer
                 //Authenticated commands
                 if (msg.opcode == MasterConnectionOpcodes.OPCODE_MASTER_CONFIG)
                     HandleRequestConfigCommand(session, msg);
+                else if (msg.opcode == MasterConnectionOpcodes.OPCODE_MASTER_GETUSERCFG)
+                    HandleGetUserConfigCmd(session, msg);
                 else
                     logger.Log("Io_OnClientMessage", $"Client {session.GetDebugName()} sent an unknown command.", DeltaLogLevel.Debug);
             }
@@ -99,6 +102,26 @@ namespace DeltaWebMap.MasterControl.Framework.IOServer
                 //Failed
                 logger.Log("HandleLoginCommand", $"Client {session.GetDebugName()} attempted login, but failed.", DeltaLogLevel.Low);
             }
+        }
+
+        private void HandleGetUserConfigCmd(MasterControlClient session, RouterMessage msg)
+        {
+            //Read strings
+            int nameLen = BitConverter.ToInt32(msg.payload, 0);
+            string name = Encoding.UTF8.GetString(msg.payload, 4, nameLen);
+            int defaultLen = BitConverter.ToInt32(msg.payload, nameLen + 4);
+            string defaultValue = Encoding.UTF8.GetString(msg.payload, 4 + nameLen + 4, defaultLen);
+
+            //Get file path
+            string path = Program.cfg.general.sub_configs_directory + name;
+
+            //Create default if needed
+            if (!File.Exists(path))
+                File.WriteAllText(path, defaultValue);
+
+            //Load and return
+            string content = File.ReadAllText(path);
+            msg.Respond(Encoding.UTF8.GetBytes(content), true);
         }
 
         private void HandleRequestConfigCommand(MasterControlClient session, RouterMessage msg)

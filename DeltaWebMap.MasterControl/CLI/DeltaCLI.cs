@@ -170,6 +170,7 @@ namespace DeltaWebMap.MasterControl.CLI
             cfg.general.public_serving_ip = CLITools.PromptFormTextInput("Make Config - Serving IP", "This is the address that manager servers will connect on. This should be open.", "10.0.1.13");
             cfg.general.admin_session_expire_time = CLITools.PromptFormIntInput("Make Config - Admin Session Time", "This is how long, in minutes, admin sessions are valid for.", "15");
             cfg.general.admin_interface_port = CLITools.PromptFormIntInput("Make Config - Admin Web Interface Port", "Select a port to run the admin interface on. This should be public facing.", "80");
+            cfg.general.sub_configs_directory = CLITools.PromptFormTextInput("Make Config - Sub Configs Directory", "Choose a directory to load sub-configs from. This could be empty. End with a slash.", "");
 
             //Prompt hosts
             cfg.hosts.master = CLITools.PromptFormTextInput("Make Config - Hosts - Master API", "Type the hostname of the master API.", "https://deltamap.net");

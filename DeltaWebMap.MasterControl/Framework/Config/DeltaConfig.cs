@@ -88,6 +88,7 @@ namespace DeltaWebMap.MasterControl.Framework.Config
         public string public_serving_ip; //The serving IP address
         public int admin_session_expire_time;
         public int admin_interface_port;
+        public string sub_configs_directory;
     }
 
     public class DeltaConfigSecrets
