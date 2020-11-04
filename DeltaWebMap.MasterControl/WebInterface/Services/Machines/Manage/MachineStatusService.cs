@@ -78,15 +78,22 @@ namespace DeltaWebMap.MasterControl.WebInterface.Services.Machines.Manage
                     }
 
                     //Generate sites list
-                    string sites = $"<form method=\"post\" action=\"assign_site\"><input type=\"hidden\" value=\"{s.id}\" name=\"instance_id\"><select name=\"site_id\">";
-                    foreach(var si in sitesList)
-                        if(si.id == s.site_id)
-                            sites += $"<option value=\"{si.id}\">{si.site_domain}</option>";
-                    sites += $"<option value=\"{s.site_id}\"><i>No Assigned Site</i></option>";
-                    foreach (var si in sitesList)
-                        if (si.id != s.site_id)
-                            sites += $"<option value=\"{si.id}\">{si.site_domain}</option>";
-                    sites += "</select></form>";
+                    string sites;
+                    if(s.ports.Length == 0)
+                    {
+                        sites = "<span style=\"color:red;\">No Ports Allocated</span>";
+                    } else
+                    {
+                        sites = $"<form method=\"post\" action=\"assign_site\" style=\"margin:0;\"><input type=\"hidden\" value=\"{s.id}\" name=\"instance_id\"><select name=\"site_id\" onchange=\"this.parentElement.submit();\">";
+                        foreach (var si in sitesList)
+                            if (si.id == s.site_id)
+                                sites += $"<option value=\"{si.id}\">{si.site_domain}</option>";
+                        sites += $"<option value=\"\"><i>No Assigned Site</i></option>";
+                        foreach (var si in sitesList)
+                            if (si.id != s.site_id)
+                                sites += $"<option value=\"{si.id}\">{si.site_domain}</option>";
+                        sites += "</select><noscript><input type=\"submit\" value=\"Update\"></noscript></form>";
+                    }
 
                     return new List<string>() { id, packageName, versionId, sites, $"<span style=\"color:white; background-color:{statusColor}; padding: 0 5px; border-radius: 5px;\">{statusText}</span>", actions };
                 });

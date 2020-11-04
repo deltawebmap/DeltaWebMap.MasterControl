@@ -66,6 +66,7 @@ namespace DeltaWebMap.MasterControl
             web_interface.AddService(new MachineDestroyInstanceDefinition());
             web_interface.AddService(new MachineDeleteVersionDefinition());
             web_interface.AddService(new MachineAddSiteDefinition());
+            web_interface.AddService(new MachineAssignSiteDefinition());
 
             //Run
             web_interface.RunAsync().GetAwaiter().GetResult();
