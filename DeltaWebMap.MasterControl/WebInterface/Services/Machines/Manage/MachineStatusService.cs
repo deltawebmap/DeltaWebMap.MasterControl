@@ -48,7 +48,7 @@ namespace DeltaWebMap.MasterControl.WebInterface.Services.Machines.Manage
                     return new List<string>() { id, packageName, time, uses, actions };
                 });
             instancesTable = new HTMLTableGenerator<NetManagerInstance>(
-                new List<string>() { "ID", "Package Name", "Version", "Status", "Actions" },
+                new List<string>() { "ID", "Package Name", "Version", "Site", "Status", "Actions" },
                 (NetManagerInstance s) =>
                 {
                     string id = s.id.ToString();
@@ -77,17 +77,46 @@ namespace DeltaWebMap.MasterControl.WebInterface.Services.Machines.Manage
                         }
                     }
 
-                    return new List<string>() { id, packageName, versionId, $"<span style=\"color:white; background-color:{statusColor}; padding: 0 5px; border-radius: 5px;\">{statusText}</span>", actions };
+                    //Generate sites list
+                    string sites = $"<form method=\"post\" action=\"assign_site\"><input type=\"hidden\" value=\"{s.id}\" name=\"instance_id\"><select name=\"site_id\">";
+                    foreach(var si in sitesList)
+                        if(si.id == s.site_id)
+                            sites += $"<option value=\"{si.id}\">{si.site_domain}</option>";
+                    sites += $"<option value=\"{s.site_id}\"><i>No Assigned Site</i></option>";
+                    foreach (var si in sitesList)
+                        if (si.id != s.site_id)
+                            sites += $"<option value=\"{si.id}\">{si.site_domain}</option>";
+                    sites += "</select></form>";
+
+                    return new List<string>() { id, packageName, versionId, sites, $"<span style=\"color:white; background-color:{statusColor}; padding: 0 5px; border-radius: 5px;\">{statusText}</span>", actions };
+                });
+            sitesTable = new HTMLTableGenerator<NetManagerSite>(
+                new List<string>() { "Domain", "Protocol", "SSL Expires In", "Instances", "Actions" },
+                (NetManagerSite s) =>
+                {
+                    //string name = s.name;
+                    //string latestVersion = s.latest_version;
+                    //string actions = GenerateFormBtnHtml("add_version", "Update", new KeyValuePair<string, string>("package_name", s.name)) + " " + GenerateFormBtnHtml("add_instance", "New Instance", new KeyValuePair<string, string>("package_name", s.name), new KeyValuePair<string, string>("count", "1"));
+                    //Count uses
+                    int usesCount = 0;
+                    foreach (var i in instanceList)
+                    {
+                        if (i.site_id == s.id)
+                            usesCount++;
+                    }
+                    return new List<string>() { s.site_domain, s.proto, Math.Floor((s.cert_expiry - DateTime.UtcNow).TotalDays) + " days", usesCount == 0 ? "<span style=\"color:red;\">0</span>" : usesCount.ToString(), "" };
                 });
         }
 
         private HTMLTableGenerator<NetManagerPackage> packagesTable;
         private HTMLTableGenerator<NetManagerVersion> versionsTable;
         private HTMLTableGenerator<NetManagerInstance> instancesTable;
+        private HTMLTableGenerator<NetManagerSite> sitesTable;
 
         private List<NetManagerPackage> packageList;
         private List<NetManagerVersion> versionList;
         private List<NetManagerInstance> instanceList;
+        private List<NetManagerSite> sitesList;
 
         public override async Task HandleManagerServer()
         {
@@ -95,6 +124,8 @@ namespace DeltaWebMap.MasterControl.WebInterface.Services.Machines.Manage
             await MakePackageList();
             versionList = await manager.transport.GetVersionList();
             instanceList = await manager.transport.GetInstanceList();
+            sitesList = await manager.transport.GetSiteList();
+            await MakeSiteList();
             await MakeVersionList();
             await MakeInstanceList();
         }
@@ -130,6 +161,18 @@ namespace DeltaWebMap.MasterControl.WebInterface.Services.Machines.Manage
 
             //Write table
             await WriteString(instancesTable.GenerateTable(instanceList));
+
+            //Write footer
+            await WriteString("<hr>");
+        }
+
+        private async Task MakeSiteList()
+        {
+            //Write header
+            await WriteString("<u>Sites</u> - " + CreateButtonHtml("Add Site", "add_site") + "<br><br>");
+
+            //Write table
+            await WriteString(sitesTable.GenerateTable(sitesList));
 
             //Write footer
             await WriteString("<hr>");
