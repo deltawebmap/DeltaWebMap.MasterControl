@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace DeltaWebMap.MasterControl.WebInterface.Services.Machines.Manage
 {
@@ -54,34 +55,27 @@ namespace DeltaWebMap.MasterControl.WebInterface.Services.Machines.Manage
                     string id = s.id.ToString();
                     string packageName = s.package_name;
                     string versionId = s.version_id;
-                    string statusColor = "#F54842";
-                    string statusText = "Unknown";
-                    string actions = GenerateFormBtnHtml("update_instance", "Update", new KeyValuePair<string, string>("instance_id", id)) + " " + GenerateFormBtnHtml("destroy_instance", "Destroy", new KeyValuePair<string, string>("instance_id", id));
+                    string actions = GenerateFormBtnHtml("update_instance", "Update", new KeyValuePair<string, string>("instance_id", id)) + " " +
+                    GenerateFormBtnHtml("reboot_instance", "Reboot", new KeyValuePair<string, string>("instance_id", id)) + " " +
+                    GenerateFormBtnHtml("destroy_instance", "Remove", new KeyValuePair<string, string>("instance_id", id));
 
-                    //Search for package this belongs to so we can check status
+                    //Check if this is outdated
+                    bool isOutdated = false;
                     foreach (var p in packageList)
                     {
                         if(p.name == packageName)
                         {
-                            if(p.latest_version == s.version_id)
-                            {
-                                //Up to date
-                                statusColor = "#43e438";
-                                statusText = "Online";
-                            } else
-                            {
-                                //Outdated
-                                statusColor = "#ec9d17";
-                                statusText = "Outdated Version";
-                            }
+                            isOutdated = isOutdated || !(p.latest_version == s.version_id);
                         }
                     }
+                    if(isOutdated)
+                        versionId += " " + GenerateBubbleHtml("#ffb94f", "Outdated");
 
                     //Generate sites list
                     string sites;
                     if(s.ports.Length == 0)
                     {
-                        sites = "<span style=\"color:red;\">No Ports Allocated</span>";
+                        sites = "<i style=\"color:gray;\">No Ports Allocated</i>";
                     } else
                     {
                         sites = $"<form method=\"post\" action=\"assign_site\" style=\"margin:0;\"><input type=\"hidden\" value=\"{s.id}\" name=\"instance_id\"><select name=\"site_id\" onchange=\"this.parentElement.submit();\">";
@@ -95,7 +89,7 @@ namespace DeltaWebMap.MasterControl.WebInterface.Services.Machines.Manage
                         sites += "</select><noscript><input type=\"submit\" value=\"Update\"></noscript></form>";
                     }
 
-                    return new List<string>() { id, packageName, versionId, sites, $"<span style=\"color:white; background-color:{statusColor}; padding: 0 5px; border-radius: 5px;\">{statusText}</span>", actions };
+                    return new List<string>() { id, packageName, versionId, sites, $"<iframe src=\"ping_instance?instance_id={s.id}\" style=\"border:0;padding:0;margin:0;height:21px;width:150px\">can't load status</iframe>", actions };
                 });
             sitesTable = new HTMLTableGenerator<NetManagerSite>(
                 new List<string>() { "Domain", "Protocol", "SSL Expires In", "Instances", "Actions" },
@@ -183,6 +177,11 @@ namespace DeltaWebMap.MasterControl.WebInterface.Services.Machines.Manage
 
             //Write footer
             await WriteString("<hr>");
+        }
+
+        private static string GenerateBubbleHtml(string bubbleColor, string bubbleText)
+        {
+            return $"<span style=\"color:white;background-color:{bubbleColor};padding: 1px 7px;border-radius: 5px; flex-grow: 1; text-align: center; height:19px;\">{HttpUtility.HtmlEncode(bubbleText)}</span>";
         }
 
         private static string GenerateFormBtnHtml(string url, string btnText, params KeyValuePair<string, string>[] values)

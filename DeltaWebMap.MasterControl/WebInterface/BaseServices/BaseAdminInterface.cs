@@ -17,6 +17,8 @@ namespace DeltaWebMap.MasterControl.WebInterface.BaseServices
 
         public const string ACCESS_TOKEN_COOKIE = "delta-admin-access-token";
 
+        public bool renderHeaderBar = true;
+
         public AdminSession session;
 
         public override async Task OnRequest()
@@ -45,21 +47,27 @@ namespace DeltaWebMap.MasterControl.WebInterface.BaseServices
             await WriteAdminHeaders();
 
             //Write page header
-            await WriteString("<html translate=\"no\"><head><title>Delta Web Map Admin</title><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, minimum-scale=1.0\"><meta name=\"google\" content=\"notranslate\"><style>td {padding-right: 15px; text-align:left;}</style></head><body style=\"font-family: Verdana, Geneva, sans-serif; font-size:15px; color:black;\"><div><b>DeltaWebMap Admin</b>");
-            foreach(var s in Program.web_interface.services)
+            await WriteString("<html translate=\"no\"><head><title>Delta Web Map Admin</title><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, minimum-scale=1.0\"><meta name=\"google\" content=\"notranslate\"><style>td {padding-right: 15px; text-align:left;}</style></head><body style=\"font-family: Verdana, Geneva, sans-serif; font-size:15px; color:black;\"><div>");
+
+            //Write top bar
+            if (renderHeaderBar)
             {
-                if(s.GetType().IsSubclassOf(typeof(AdminInterfaceHeaderDefinition)))
+                await WriteString("<b>DeltaWebMap Admin</b>");
+                foreach (var s in Program.web_interface.services)
                 {
-                    var ws = (AdminInterfaceHeaderDefinition)s;
-                    await WriteString(" - ");
-                    await WriteButton(ws.GetTitle(), ws.GetTemplateUrl());
+                    if (s.GetType().IsSubclassOf(typeof(AdminInterfaceHeaderDefinition)))
+                    {
+                        var ws = (AdminInterfaceHeaderDefinition)s;
+                        await WriteString(" - ");
+                        await WriteButton(ws.GetTitle(), ws.GetTemplateUrl());
+                    }
                 }
+                if (session != null)
+                {
+                    await WriteString($"<div style=\"float:right;\">Session Expires in {Math.Round(Math.Max(0, (session.expiry - DateTime.UtcNow).TotalMinutes), 1)} Minutes {CreateButtonHtml("End Now", "/logout")}</div>");
+                }
+                await WriteString("</div><hr><div>");
             }
-            if(session != null)
-            {
-                await WriteString($"<div style=\"float:right;\">Session Expires in {Math.Round(Math.Max(0, (session.expiry - DateTime.UtcNow).TotalMinutes), 1)} Minutes {CreateButtonHtml("End Now", "/logout")}</div>");
-            }
-            await WriteString("</div><hr><div>");
 
             //Run
             try

@@ -1,8 +1,10 @@
-﻿using LibDeltaSystem.CoreNet;
+﻿using DeltaWebMap.MasterControl.Framework.Entities;
+using LibDeltaSystem.CoreNet;
 using LibDeltaSystem.CoreNet.IO;
 using LibDeltaSystem.CoreNet.IO.Server;
 using LibDeltaSystem.CoreNet.NetMessages.Master;
 using LibDeltaSystem.CoreNet.NetMessages.Master.Entities;
+using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading.Channels;
@@ -22,6 +24,22 @@ namespace DeltaWebMap.MasterControl.Framework.IOServer
         public Task<ManagerStatusMessage> RequestStatus()
         {
             return RequestGetObject<ManagerStatusMessage>(MasterConnectionOpcodes.OPCODE_MASTER_STATUS);
+        }
+
+        public async Task<InstancePingResult> PingInstance(long instanceId)
+        {
+            var c = SendMessageGetResponseChannel(MasterConnectionOpcodes.OPCODE_MASTER_PING_INSTANCE, BitConverter.GetBytes(instanceId));
+            var m = await c.ReadAsync();
+            return new InstancePingResult
+            {
+                status = (InstanceStatusResult)m.payload[0],
+                reserved = m.payload[1],
+                lib_version_major = m.payload[2],
+                lib_version_minor = m.payload[3],
+                app_version_major = m.payload[4],
+                app_version_minor = m.payload[5],
+                initial_instance_ping_ms = BitConverter.ToUInt16(m.payload, 6)
+            };
         }
 
         public ChannelReader<RouterMessage> AddPackage(ManagerAddPackage cmd)
@@ -82,6 +100,11 @@ namespace DeltaWebMap.MasterControl.Framework.IOServer
         public ChannelReader<RouterMessage> AssignSite(ManagerAssignSite cmd)
         {
             return SendMessageGetResponseChannelSerialized(MasterConnectionOpcodes.OPCODE_MASTER_M_ASSIGNSITE, cmd);
+        }
+
+        public ChannelReader<RouterMessage> RebootInstance(ManagerRebootInstance cmd)
+        {
+            return SendMessageGetResponseChannelSerialized(MasterConnectionOpcodes.OPCODE_MASTER_REBOOT_INSTANCE, cmd);
         }
     }
 }
