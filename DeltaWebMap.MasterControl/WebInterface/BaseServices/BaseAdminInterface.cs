@@ -18,6 +18,7 @@ namespace DeltaWebMap.MasterControl.WebInterface.BaseServices
         public const string ACCESS_TOKEN_COOKIE = "delta-admin-access-token";
 
         public bool renderHeaderBar = true;
+        public bool renderContainerHtml = true;
 
         public AdminSession session;
 
@@ -47,7 +48,8 @@ namespace DeltaWebMap.MasterControl.WebInterface.BaseServices
             await WriteAdminHeaders();
 
             //Write page header
-            await WriteString("<html translate=\"no\"><head><title>Delta Web Map Admin</title><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, minimum-scale=1.0\"><meta name=\"google\" content=\"notranslate\"><style>td {padding-right: 15px; text-align:left;}</style></head><body style=\"font-family: Verdana, Geneva, sans-serif; font-size:15px; color:black;\"><div>");
+            if(renderContainerHtml)
+                await WriteString("<html translate=\"no\"><head><title>Delta Web Map Admin</title><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, minimum-scale=1.0\"><meta name=\"google\" content=\"notranslate\"><style>td {padding-right: 15px; text-align:left;}</style></head><body style=\"font-family: Verdana, Geneva, sans-serif; font-size:15px; color:black;\"><div>");
 
             //Write top bar
             if (renderHeaderBar)
@@ -75,11 +77,13 @@ namespace DeltaWebMap.MasterControl.WebInterface.BaseServices
                 await HandleAdminRequest();
             } catch (Exception ex)
             {
+                Log("WEB", $"Error while handling web interface request: {ex.Message}{ex.StackTrace}");
                 await WriteString($"<div style=\"background-color:#e6e6e6; padding:15px;\"><b style=\"color:red\">There was an error rendering this page.</b><br><br>{HttpUtility.HtmlEncode(ex.Message + ex.StackTrace)}</div>");
             }
 
             //Write footer
-            await WriteString("</div></body></html>");
+            if(renderContainerHtml)
+                await WriteString("</div></body></html>");
         }
 
         public abstract Task WriteAdminHeaders();

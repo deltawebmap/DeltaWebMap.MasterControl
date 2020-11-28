@@ -19,7 +19,7 @@ namespace DeltaWebMap.MasterControl
     class Program
     {
         public const byte APP_VERSION_MAJOR = 0;
-        public const byte APP_VERSION_MINOR = 2;
+        public const byte APP_VERSION_MINOR = 3;
 
         public static DeltaConfig cfg;
         public static DeltaConnection delta;

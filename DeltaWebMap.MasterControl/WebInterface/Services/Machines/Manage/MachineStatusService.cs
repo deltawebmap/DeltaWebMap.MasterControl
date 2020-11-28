@@ -58,6 +58,7 @@ namespace DeltaWebMap.MasterControl.WebInterface.Services.Machines.Manage
                     string actions = GenerateFormBtnHtml("update_instance", "Update", new KeyValuePair<string, string>("instance_id", id)) + " " +
                     GenerateFormBtnHtml("reboot_instance", "Reboot", new KeyValuePair<string, string>("instance_id", id)) + " " +
                     GenerateFormBtnHtml("destroy_instance", "Remove", new KeyValuePair<string, string>("instance_id", id));
+                    string status = $"<div style=\"height:21px;width:150px;position:relative;\"><div style=\"font-size:13px;text-align:center;color:gray;line-height:21px;\">PINGING...</div><iframe src=\"ping_instance?instance_id={s.id}\" style=\"border:0;padding:0;margin:0;height:21px;width:150px;position:absolute;top:0;left:0;\"></iframe></div>";
 
                     //Check if this is outdated
                     bool isOutdated = false;
@@ -89,7 +90,7 @@ namespace DeltaWebMap.MasterControl.WebInterface.Services.Machines.Manage
                         sites += "</select><noscript><input type=\"submit\" value=\"Update\"></noscript></form>";
                     }
 
-                    return new List<string>() { id, packageName, versionId, sites, $"<iframe src=\"ping_instance?instance_id={s.id}\" style=\"border:0;padding:0;margin:0;height:21px;width:150px\">can't load status</iframe>", actions };
+                    return new List<string>() { id, packageName, versionId, sites, status, actions };
                 });
             sitesTable = new HTMLTableGenerator<NetManagerSite>(
                 new List<string>() { "Domain", "Protocol", "SSL Expires In", "Instances", "Actions" },

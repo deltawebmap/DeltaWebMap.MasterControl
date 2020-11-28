@@ -16,6 +16,7 @@ namespace DeltaWebMap.MasterControl.WebInterface.Services.Machines.Manage
         public MachinePingInstanceService(DeltaConnection conn, HttpContext e) : base(conn, e)
         {
             renderHeaderBar = false;
+            renderContainerHtml = false;
         }
 
         private const string COLOR_RED = "#ff4f4f";
@@ -24,6 +25,13 @@ namespace DeltaWebMap.MasterControl.WebInterface.Services.Machines.Manage
         private const string COLOR_GREEN = "#52f244";
 
         public override async Task HandleManagerServer()
+        {
+            await WriteString("<html><head><title>Status</title></head><body style=\"background:white;display:flex;height:21px;width:150px;line-height:21px;font-size: medium;margin:0;padding:0;\">");
+            await Process();
+            await WriteString("</body></html>");
+        }
+
+        public async Task Process()
         {
             //Get the ID
             if(!e.Request.Query.ContainsKey("instance_id"))
@@ -71,11 +79,9 @@ namespace DeltaWebMap.MasterControl.WebInterface.Services.Machines.Manage
 
         private async Task WriteBubbleContent(string bubbleColor, string bubbleText, string sideText)
         {
-            await WriteString("<div class=\"display:flex;height:21px;line-height:19px;font-size: medium;\">");
             await WriteString($"<div style=\"color:white;background-color:{bubbleColor};padding: 0px 7px;border-radius: 5px; flex-grow: 1; text-align: center;\">{HttpUtility.HtmlEncode(bubbleText)}</div>");
             if (sideText.Length > 0)
-                await WriteString("<div style=\"line-height:21px;margin-left:8px;\">" + sideText + "</div>");
-            await WriteString("</div>");
+                await WriteString("<div style=\"margin-left:8px;\">" + sideText + "</div>");
         }
 
         private async Task WriteErrorBubble(string text)
