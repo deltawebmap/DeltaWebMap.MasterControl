@@ -90,7 +90,7 @@ namespace DeltaWebMap.MasterControl.WebInterface.Services.Machines.Manage
 
         private async Task WriteErrorBubble(string text)
         {
-            await WriteBubbleContent(COLOR_RED, "");
+            await WriteBubbleContent(COLOR_RED, text, "");
         }
     }
 
