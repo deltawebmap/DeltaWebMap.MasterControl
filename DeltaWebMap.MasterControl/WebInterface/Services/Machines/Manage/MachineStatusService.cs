@@ -55,10 +55,7 @@ namespace DeltaWebMap.MasterControl.WebInterface.Services.Machines.Manage
                     string id = s.id.ToString();
                     string packageName = s.package_name;
                     string versionId = s.version_id;
-                    string actions = GenerateFormBtnHtml("update_instance", "Upgrade", new KeyValuePair<string, string>("instance_id", id)) + " " +
-                    GenerateFormBtnHtml("reboot_instance", "Reboot", new KeyValuePair<string, string>("instance_id", id)) + " " +
-                    GenerateFormBtnHtml("destroy_instance", "Remove", new KeyValuePair<string, string>("instance_id", id));
-                    string status = $"<div style=\"height:21px;width:150px;position:relative;\"><div style=\"font-size:13px;text-align:center;color:gray;line-height:21px;\">PINGING...</div><iframe src=\"ping_instance?instance_id={s.id}\" style=\"border:0;padding:0;margin:0;height:21px;width:150px;position:absolute;top:0;left:0;\"></iframe></div>";
+                    string status = $"<div style=\"height:21px;width:150px;position:relative;\"><div style=\"font-size:13px;text-align:center;color:gray;line-height:21px;\">PINGING...</div><iframe scrolling=\"no\" src=\"ping_instance?instance_id={s.id}\" style=\"border:0;padding:0;margin:0;height:21px;width:150px;position:absolute;top:0;left:0;\"></iframe></div>";
 
                     //Check if this is outdated
                     bool isOutdated = false;
@@ -89,6 +86,11 @@ namespace DeltaWebMap.MasterControl.WebInterface.Services.Machines.Manage
                                 sites += $"<option value=\"{si.id}\">{si.site_domain}</option>";
                         sites += "</select><noscript><input type=\"submit\" value=\"Update\"></noscript></form>";
                     }
+
+                    //Generate
+                    string actions = GenerateFormBtnHtml("update_instance", "Upgrade", !isOutdated, new KeyValuePair<string, string>("instance_id", id)) + " " +
+                    GenerateFormBtnHtml("reboot_instance", "Reboot", new KeyValuePair<string, string>("instance_id", id)) + " " +
+                    GenerateFormBtnHtml("destroy_instance", "Remove", new KeyValuePair<string, string>("instance_id", id));
 
                     return new List<string>() { id, packageName, versionId, sites, status, actions };
                 });
@@ -187,10 +189,18 @@ namespace DeltaWebMap.MasterControl.WebInterface.Services.Machines.Manage
 
         private static string GenerateFormBtnHtml(string url, string btnText, params KeyValuePair<string, string>[] values)
         {
+            return GenerateFormBtnHtml(url, btnText, false, values);
+        }
+
+        private static string GenerateFormBtnHtml(string url, string btnText, bool disabled, params KeyValuePair<string, string>[] values)
+        {
             string html = $"<form style=\"display:inline-block; margin:0;\" method=\"post\" action=\"{url}\">";
             foreach (var v in values)
                 html += $"<input type=\"hidden\" name=\"{v.Key}\" id=\"{v.Key}\" value=\"{v.Value}\">";
-            html += $"<input type=\"submit\" value=\"{btnText}\"></form>";
+            if(disabled)
+                html += $"<input type=\"submit\" value=\"{btnText}\" disabled></form>";
+            else
+                html += $"<input type=\"submit\" value=\"{btnText}\"></form>";
             return html;
         }
     }

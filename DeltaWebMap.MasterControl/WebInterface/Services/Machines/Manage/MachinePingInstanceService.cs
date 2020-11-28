@@ -46,7 +46,7 @@ namespace DeltaWebMap.MasterControl.WebInterface.Services.Machines.Manage
                 if (await Task.WhenAny(t, Task.Delay(8000)) != t)
                 {
                     //Timed out
-                    await WriteErrorBubble("Command Timed Out");
+                    await WriteErrorBubble("Cmd Timed Out");
                     return;
                 } else
                 {
@@ -90,7 +90,7 @@ namespace DeltaWebMap.MasterControl.WebInterface.Services.Machines.Manage
 
         private async Task WriteErrorBubble(string text)
         {
-            await WriteBubbleContent(COLOR_RED, text.ToUpper(), "");
+            await WriteBubbleContent(COLOR_RED, "");
         }
     }
 
