@@ -95,7 +95,7 @@ namespace DeltaWebMap.MasterControl.WebInterface.Services.Machines.Manage
                     return new List<string>() { id, packageName, versionId, sites, status, actions };
                 });
             sitesTable = new HTMLTableGenerator<NetManagerSite>(
-                new List<string>() { "Domain", "Protocol", "SSL Expires In", "Instances", "Actions" },
+                new List<string>() { "Domain", "Proxies", "SSL Expires In", "Instances", "Actions" },
                 (NetManagerSite s) =>
                 {
                     //string name = s.name;
@@ -108,7 +108,7 @@ namespace DeltaWebMap.MasterControl.WebInterface.Services.Machines.Manage
                         if (i.site_id == s.id)
                             usesCount++;
                     }
-                    return new List<string>() { s.site_domain, s.proto, Math.Floor((s.cert_expiry - DateTime.UtcNow).TotalDays) + " days", usesCount == 0 ? "<span style=\"color:red;\">0</span>" : usesCount.ToString(), "" };
+                    return new List<string>() { s.site_domain, s.proxies.Length.ToString(), Math.Floor((s.cert_expiry - DateTime.UtcNow).TotalDays) + " days", usesCount == 0 ? "<span style=\"color:red;\">0</span>" : usesCount.ToString(), "" };
                 });
         }
 
