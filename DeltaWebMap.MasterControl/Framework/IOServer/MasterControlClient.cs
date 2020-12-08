@@ -25,6 +25,8 @@ namespace DeltaWebMap.MasterControl.Framework.IOServer
         public DeltaManagerServer server;
         public event MasterControlClientInstanceLogEventArgs OnInstanceLog;
 
+        private const int LOG_HEADER_LEN = 8;
+
         public void DispatchInstanceLogEvent(byte[] payload)
         {
             //If there are no subsribers, abort
@@ -33,11 +35,11 @@ namespace DeltaWebMap.MasterControl.Framework.IOServer
 
             //Parse
             long instanceId = BitConverter.ToInt64(payload, 0);
-            int logLevel = BitConverter.ToInt32(payload, 4);
-            int topicLen = BitConverter.ToInt32(payload, 8);
-            int messageLen = BitConverter.ToInt32(payload, 12 + topicLen);
-            string topic = Encoding.UTF8.GetString(payload, 12, topicLen);
-            string msg = Encoding.UTF8.GetString(payload, 12 + topicLen + 4, messageLen);
+            int logLevel = BitConverter.ToInt32(payload, LOG_HEADER_LEN + 0);
+            int topicLen = BitConverter.ToInt32(payload, LOG_HEADER_LEN + 4);
+            int messageLen = BitConverter.ToInt32(payload, LOG_HEADER_LEN + 8 + topicLen);
+            string topic = Encoding.UTF8.GetString(payload, LOG_HEADER_LEN + 8, topicLen);
+            string msg = Encoding.UTF8.GetString(payload, LOG_HEADER_LEN + 8 + topicLen + 4, messageLen);
 
             //Dispatch
             OnInstanceLog.Invoke(instanceId, (LibDeltaSystem.DeltaLogLevel)logLevel, topic, msg);

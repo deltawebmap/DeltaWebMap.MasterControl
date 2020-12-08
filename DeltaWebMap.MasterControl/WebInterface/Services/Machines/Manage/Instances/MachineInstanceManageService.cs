@@ -64,7 +64,7 @@ namespace DeltaWebMap.MasterControl.WebInterface.Services.Machines.Manage.Instan
     {
         public override string GetTemplateUrl()
         {
-            return "/machines/id/{MANAGER_ID}/instance/{INSTANCE_ID}";
+            return "/machines/id/{MANAGER_ID}/instances/{INSTANCE_ID}";
         }
 
         public override DeltaWebService OpenRequest(DeltaConnection conn, HttpContext e)
