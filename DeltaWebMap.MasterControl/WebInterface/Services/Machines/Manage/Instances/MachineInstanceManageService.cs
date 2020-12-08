@@ -56,7 +56,7 @@ namespace DeltaWebMap.MasterControl.WebInterface.Services.Machines.Manage.Instan
             }
 
             //Log
-            WriteString($"<div style=\"display:flex;margin-top:5px;\"><div style=\"margin-right: 10px;white-space: nowrap;\"><span style=\"background-color:{color};color:white;border-radius: 5px;padding: 3px 6px;\">{logLevel.ToString().ToUpper()}</span> <u style=\"color:{color};\">{HttpUtility.HtmlEncode(topic)}</u></div><div>{HttpUtility.HtmlEncode(message)}</div></div>");
+            WriteString($"<div style=\"display:flex;margin-top:6px;\"><div style=\"margin-right: 10px;white-space: nowrap;\"><span style=\"background-color:{color};color:white;border-radius: 5px;padding: 2px 6px;\">{logLevel.ToString().ToUpper()}</span> <u style=\"color:{color};\">{HttpUtility.HtmlEncode(topic)}</u></div><div>{HttpUtility.HtmlEncode(message).Replace("\n", "<br>")}</div></div>");
         }
     }
 
