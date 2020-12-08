@@ -6,6 +6,7 @@ using DeltaWebMap.MasterControl.WebInterface;
 using DeltaWebMap.MasterControl.WebInterface.Services;
 using DeltaWebMap.MasterControl.WebInterface.Services.Machines;
 using DeltaWebMap.MasterControl.WebInterface.Services.Machines.Manage;
+using DeltaWebMap.MasterControl.WebInterface.Services.Machines.Manage.Instances;
 using LibDeltaSystem;
 using LibDeltaSystem.Tools;
 using LibDeltaSystem.WebFramework;
