@@ -41,6 +41,8 @@ namespace DeltaWebMap.MasterControl.Framework.IOServer
                     HandleRequestConfigCommand(session, msg);
                 else if (msg.opcode == MasterConnectionOpcodes.OPCODE_MASTER_GETUSERCFG)
                     HandleGetUserConfigCmd(session, msg);
+                else if (msg.opcode == MasterConnectionOpcodes.OPCODE_MASTER_INSTANCE_LOG)
+                    HandleInstanceLogCommand(session, msg);
                 else
                     logger.Log("Io_OnClientMessage", $"Client {session.GetDebugName()} sent an unknown command.", DeltaLogLevel.Debug);
             }
@@ -137,6 +139,11 @@ namespace DeltaWebMap.MasterControl.Framework.IOServer
                 steam_token_key = Program.cfg.secrets.steam_token_key,
                 hosts = Program.cfg.hosts
             }, true);
+        }
+
+        private void HandleInstanceLogCommand(MasterControlClient session, RouterMessage msg)
+        {
+            session.DispatchInstanceLogEvent(msg.payload);
         }
     }
 }

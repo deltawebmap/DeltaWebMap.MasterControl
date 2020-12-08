@@ -19,7 +19,7 @@ namespace DeltaWebMap.MasterControl
     class Program
     {
         public const byte APP_VERSION_MAJOR = 0;
-        public const byte APP_VERSION_MINOR = 5;
+        public const byte APP_VERSION_MINOR = 6;
 
         public static DeltaConfig cfg;
         public static DeltaConnection delta;
@@ -69,6 +69,7 @@ namespace DeltaWebMap.MasterControl
             web_interface.AddService(new MachineAssignSiteDefinition());
             web_interface.AddService(new MachineRebootInstanceDefinition());
             web_interface.AddService(new MachinePingInstanceDefinition());
+            web_interface.AddService(new MachineInstanceManageDefinition());
 
             //Run
             web_interface.RunAsync().GetAwaiter().GetResult();

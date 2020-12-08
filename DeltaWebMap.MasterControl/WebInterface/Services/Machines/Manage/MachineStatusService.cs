@@ -90,7 +90,8 @@ namespace DeltaWebMap.MasterControl.WebInterface.Services.Machines.Manage
                     //Generate
                     string actions = GenerateFormBtnHtml("update_instance", "Upgrade", !isOutdated, new KeyValuePair<string, string>("instance_id", id)) + " " +
                     GenerateFormBtnHtml("reboot_instance", "Reboot", new KeyValuePair<string, string>("instance_id", id)) + " " +
-                    GenerateFormBtnHtml("destroy_instance", "Remove", new KeyValuePair<string, string>("instance_id", id));
+                    GenerateFormBtnHtml("destroy_instance", "Remove", new KeyValuePair<string, string>("instance_id", id)) + " " +
+                    GenerateFormBtnHtml("instances/" + id, "Manage", new KeyValuePair<string, string>());
 
                     return new List<string>() { id, packageName, versionId, sites, status, actions };
                 });

@@ -7,11 +7,14 @@ using LibDeltaSystem.CoreNet.NetMessages.Master.Entities;
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 
 namespace DeltaWebMap.MasterControl.Framework.IOServer
 {
+    public delegate void MasterControlClientInstanceLogEventArgs(long instanceId, LibDeltaSystem.DeltaLogLevel logLevel, string topic, string message);
+    
     public class MasterControlClient : ServerRouterSession
     {
         public MasterControlClient(IServerRouterIO server, Socket sock) : base(server, sock)
@@ -20,6 +23,25 @@ namespace DeltaWebMap.MasterControl.Framework.IOServer
 
         public bool authenticated;
         public DeltaManagerServer server;
+        public event MasterControlClientInstanceLogEventArgs OnInstanceLog;
+
+        public void DispatchInstanceLogEvent(byte[] payload)
+        {
+            //If there are no subsribers, abort
+            if (OnInstanceLog == null)
+                return;
+
+            //Parse
+            long instanceId = BitConverter.ToInt64(payload, 0);
+            int logLevel = BitConverter.ToInt32(payload, 4);
+            int topicLen = BitConverter.ToInt32(payload, 8);
+            int messageLen = BitConverter.ToInt32(payload, 12 + topicLen);
+            string topic = Encoding.UTF8.GetString(payload, 12, topicLen);
+            string msg = Encoding.UTF8.GetString(payload, 12 + topicLen + 4, messageLen);
+
+            //Dispatch
+            OnInstanceLog.Invoke(instanceId, (LibDeltaSystem.DeltaLogLevel)logLevel, topic, msg);
+        }
 
         public Task<ManagerStatusMessage> RequestStatus()
         {
